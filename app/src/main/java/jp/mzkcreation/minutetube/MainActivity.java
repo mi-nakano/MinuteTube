@@ -9,8 +9,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     /** Global instance of the max number of videos we want returned (50 = upper limit per page). */
     private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
 
+    ListView searchList;
     EditText searchText;
     Button searchBtn;
 
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        searchList = (ListView) findViewById(R.id.search_list);
         searchText = (EditText) findViewById(R.id.search_text);
         searchBtn = (Button) findViewById(R.id.search_btn);
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -161,6 +165,11 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<SearchResult> results){
             if (results != null) {
                 prettyPrint(results.iterator(), searchWord);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, R.id.item_text);
+                for(SearchResult result : results){
+                    adapter.add(result.getSnippet().getTitle());
+                }
+                searchList.setAdapter(adapter);
             }
         }
     }

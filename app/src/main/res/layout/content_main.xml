@@ -12,23 +12,29 @@
     tools:context="jp.mzkcreation.minutetube.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout">
+        android:id="@+id/search_group">
         <EditText
             android:id="@+id/search_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="YouTubeで検索"/>
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/search_btn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_below="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
-        android:text="検索"
-        android:layout_marginTop="85dp" />
+        <Button
+            android:id="@+id/search_btn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_below="@id/search_text"
+            android:text="検索" />
+
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/search_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_group"/>
 </RelativeLayout>
