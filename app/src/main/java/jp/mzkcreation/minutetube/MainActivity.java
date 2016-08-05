@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -165,9 +164,9 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<SearchResult> results){
             if (results != null) {
                 prettyPrint(results.iterator(), searchWord);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, R.id.item_text);
+                CustomAdapter adapter = new CustomAdapter(MainActivity.this);
                 for(SearchResult result : results){
-                    adapter.add(result.getSnippet().getTitle());
+                    adapter.add(Video.makeVideo(result));
                 }
                 searchList.setAdapter(adapter);
             }
