@@ -9,6 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -37,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
     /** Global instance of the max number of videos we want returned (50 = upper limit per page). */
     private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
 
-    SearchTask task;
+    EditText searchText;
+    Button searchBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +49,15 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        task = new SearchTask();
-        task.execute("word");
+        searchText = (EditText) findViewById(R.id.search_text);
+        searchBtn = (Button) findViewById(R.id.search_btn);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchTask task = new SearchTask();
+                task.execute(searchText.getText().toString());
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -110,10 +120,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class SearchTask extends AsyncTask<String, Void, String> {
+    class SearchTask extends AsyncTask<String, Void, List<SearchResult>> {
+        String searchWord;
+
         @Override
-        protected String doInBackground(String... words){
-            String query = "a";
+        protected List<SearchResult> doInBackground(String... words){
+            searchWord = words[0];
 
             Properties properties = new Properties();
             try {
@@ -133,24 +145,23 @@ public class MainActivity extends AppCompatActivity {
                 YouTube.Search.List search = youtube.search().list("id,snippet");
                 String apiKey = properties.getProperty("youtube.apikey");
                 search.setKey(apiKey);
-                search.setQ(query);
+                search.setQ(searchWord);
                 search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
                 search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
                 SearchListResponse searchResponse = search.execute();
                 List<SearchResult> searchResultList = searchResponse.getItems();
-                if (searchResultList != null) {
-                    prettyPrint(searchResultList.iterator(), query);
-                }
+                return searchResultList;
 
             } catch (IOException e){
-
+                return null;
             }
-            return "";
         }
 
         @Override
-        protected void onPostExecute(String result){
-
+        protected void onPostExecute(List<SearchResult> results){
+            if (results != null) {
+                prettyPrint(results.iterator(), searchWord);
+            }
         }
     }
 }
