@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">MinuteTube</string>
     <string name="action_settings">Settings</string>
+
+    <string-array name="spinner_list">
+        <item>0〜4 min</item>
+        <item>4〜20 min</item>
+        <item>20 min 〜</item>
+    </string-array>
 </resources>

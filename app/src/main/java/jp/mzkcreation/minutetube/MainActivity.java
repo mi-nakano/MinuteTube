@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -22,13 +23,10 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
-import com.google.api.services.youtube.model.Thumbnail;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,8 +52,10 @@ public class MainActivity extends AppCompatActivity {
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Spinner spinner = (Spinner)findViewById(R.id.search_spinner);
+                int index = spinner.getSelectedItemPosition();
                 SearchTask task = new SearchTask();
-                task.execute(searchText.getText().toString());
+                task.execute(searchText.getText().toString(), getDurationParam(index));
             }
         });
 
@@ -92,40 +92,24 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private static void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
-
-        System.out.println("\n=============================================================");
-        System.out.println(
-                "   First " + NUMBER_OF_VIDEOS_RETURNED + " videos for search on \"" + query + "\".");
-        System.out.println("=============================================================\n");
-
-        if (!iteratorSearchResults.hasNext()) {
-            System.out.println(" There aren't any results for your query.");
+    private String getDurationParam(int spinnerIndex){
+        switch (spinnerIndex){
+            case 0:
+                return "short";
+            case 1:
+                return "medium";
+            case 2:
+                return "long";
         }
-
-        while (iteratorSearchResults.hasNext()) {
-
-            SearchResult singleVideo = iteratorSearchResults.next();
-            ResourceId rId = singleVideo.getId();
-
-            // Double checks the kind is video.
-            if (rId.getKind().equals("youtube#video")) {
-                Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
-
-                System.out.println(" Video Id" + rId.getVideoId());
-                System.out.println(" Title: " + singleVideo.getSnippet().getTitle());
-                System.out.println(" Thumbnail: " + thumbnail.getUrl());
-                System.out.println("\n-------------------------------------------------------------\n");
-            }
-        }
+        return "any";
     }
 
     class SearchTask extends AsyncTask<String, Void, List<SearchResult>> {
-        String searchWord;
 
         @Override
         protected List<SearchResult> doInBackground(String... words){
-            searchWord = words[0];
+            String searchWord = words[0];
+            String duration = words[1];
 
             try {
                 youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
@@ -133,9 +117,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).setApplicationName("youtube-cmdline-search-sample").build();
                 YouTube.Search.List search = youtube.search().list("id,snippet");
+                search.setType("video");
                 String apiKey = Util.getYoutubeAPIKey();
                 search.setKey(apiKey);
                 search.setQ(searchWord);
+                search.setVideoDuration(duration);
                 search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
                 search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
                 SearchListResponse searchResponse = search.execute();
@@ -150,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<SearchResult> results){
             if (results != null) {
-                prettyPrint(results.iterator(), searchWord);
                 CustomAdapter adapter = new CustomAdapter(MainActivity.this);
                 for(SearchResult result : results){
                     adapter.add(Video.makeVideo(result));

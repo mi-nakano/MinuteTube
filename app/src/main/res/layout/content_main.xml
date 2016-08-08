@@ -20,13 +20,24 @@
             android:id="@+id/search_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:maxLength="50"
             android:hint="YouTubeで検索"/>
+
+        <Spinner
+            android:id="@+id/search_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/spinner_list"
+            android:layout_below="@id/search_text"
+            android:spinnerMode="dialog"/>
 
         <Button
             android:id="@+id/search_btn"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_below="@id/search_text"
+            android:layout_toRightOf="@id/search_spinner"
             android:text="検索" />
 
     </RelativeLayout>
