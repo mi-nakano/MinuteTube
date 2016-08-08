@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +25,15 @@ public class CustomAdapter extends BaseAdapter{
     Context context;
     LayoutInflater layoutInflater = null;
     ArrayList<Video> videoList;
+    LruCache<String, Bitmap> cache;
+
+    private final int CACHE_SIZE = 1024 * 1024;
 
     public CustomAdapter(Context context){
         this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         videoList = new ArrayList<>();
+        cache = new LruCache<>(CACHE_SIZE);
     }
 
     public void setVideoList(ArrayList<Video> list){
@@ -61,7 +66,7 @@ public class CustomAdapter extends BaseAdapter{
         //サムネイルの設定
         ImageView thumbnail = (ImageView)convertView.findViewById(R.id.item_thumbnail);
         thumbnail.setTag(v.getThumbnail());     // URLをタグとしておく
-        new ImageGetTask(thumbnail).execute();
+        new ImageGetTask(this, thumbnail).execute();
 
         return convertView;
     }
@@ -70,23 +75,41 @@ public class CustomAdapter extends BaseAdapter{
         videoList.add(v);
     }
 
+    void addCache(String tag, Bitmap bitmap){
+        if(cache.get(tag) == null) {
+            cache.put(tag, bitmap);
+        }
+    }
+
+    Bitmap getFromCache(String tag){
+        return cache.get(tag);
+    }
+
 
     class ImageGetTask extends AsyncTask<String, Void, Bitmap> {
+        private CustomAdapter adapter;
         private ImageView image;
         private String tag;
 
-        public ImageGetTask(ImageView image){
+        public ImageGetTask(CustomAdapter adapter, ImageView image){
+            this.adapter = adapter;
             this.image = image;
             tag = image.getTag().toString();
         }
 
         @Override
         protected Bitmap doInBackground(String... params){
+            Bitmap bitmap = adapter.getFromCache(tag);
+            if(bitmap != null){
+                return bitmap;
+            }
             try {
                 URL imageUrl = new URL(tag);
                 InputStream imageIs;
                 imageIs = imageUrl.openStream();
-                return BitmapFactory.decodeStream(imageIs);
+                bitmap = BitmapFactory.decodeStream(imageIs);
+                adapter.addCache(tag, bitmap);
+                return bitmap;
             } catch (MalformedURLException e) {
                 return null;
             } catch (IOException e) {
