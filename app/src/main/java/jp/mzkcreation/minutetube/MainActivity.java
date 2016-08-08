@@ -177,10 +177,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
                         ListView list = (ListView) parent;
-                        Video selectedItem = (Video) list.getItemAtPosition(position);
+                        Video video = (Video) list.getItemAtPosition(position);
 
                         // 新しいアクティビティをスタート
                         Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
+                        intent.putExtra("title", video.getTitle());
+                        intent.putExtra("description", video.getDescription());
                         startActivity(intent);
                     }
                 });
