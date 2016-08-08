@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // 新しいアクティビティをスタート
                         Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
+                        intent.putExtra("id", video.getVidoId());
                         intent.putExtra("title", video.getTitle());
                         intent.putExtra("description", video.getDescription());
                         startActivity(intent);
