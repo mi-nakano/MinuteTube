@@ -28,18 +28,13 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Thumbnail;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 public class MainActivity extends AppCompatActivity {
-    /** Global instance properties filename. */
-    private static String PROPERTIES_FILENAME = "youtube.properties";
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
     private static YouTube youtube;
-    /** Global instance of the max number of videos we want returned (50 = upper limit per page). */
     private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
 
     ListView searchList;
@@ -132,23 +127,13 @@ public class MainActivity extends AppCompatActivity {
         protected List<SearchResult> doInBackground(String... words){
             searchWord = words[0];
 
-            Properties properties = new Properties();
-            try {
-                InputStream in = MainActivity.class.getResourceAsStream("/" + PROPERTIES_FILENAME);
-                properties.load(in);
-            } catch (IOException e) {
-                System.err.println("There was an error reading " + PROPERTIES_FILENAME + ": " + e.getCause()
-                        + " : " + e.getMessage());
-                System.exit(1);
-            }
-
             try {
                 youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
                     public void initialize(HttpRequest request) throws IOException {
                     }
                 }).setApplicationName("youtube-cmdline-search-sample").build();
                 YouTube.Search.List search = youtube.search().list("id,snippet");
-                String apiKey = properties.getProperty("youtube.apikey");
+                String apiKey = Util.getYoutubeAPIKey();
                 search.setKey(apiKey);
                 search.setQ(searchWord);
                 search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
