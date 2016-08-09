@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.google.apis:google-api-services-youtube:v3-rev177-1.22.0'
     compile files('libs/YouTubeAndroidPlayerApi.jar')
+    compile 'com.google.android.gms:play-services-ads:9.2.0'
 }
