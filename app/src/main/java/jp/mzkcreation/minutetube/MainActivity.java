@@ -1,5 +1,6 @@
 package jp.mzkcreation.minutetube;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private static YouTube youtube;
     private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
 
+    private ProgressDialog progressDialog;
+
     ListView searchList;
     EditText searchText;
 
@@ -52,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setMessage("Searching...");
+                progressDialog.show();
                 Spinner spinner = (Spinner)findViewById(R.id.search_spinner);
                 int index = spinner.getSelectedItemPosition();
                 SearchTask task = new SearchTask();
@@ -155,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
+                MainActivity.this.progressDialog.dismiss();
             }
         }
     }
