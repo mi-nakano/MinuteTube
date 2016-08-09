@@ -4,25 +4,24 @@
     android:layout_height="100dp">
 
 
-    <LinearLayout
-        android:id="@+id/list_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="4">
+    <FrameLayout
+        android:id="@+id/item_left"
+        android:layout_width="@dimen/item_left_width"
+        android:layout_height="@dimen/item_height">
         <ImageView
             android:id="@+id/item_thumbnail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-            android:src="@drawable/gray"/>
-    </LinearLayout>
+            android:background="@drawable/gray"/>
+    </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/item_right"
         android:orientation="vertical"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="6">
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height">
         <TextView
             android:id="@+id/item_title"
             android:textSize="@dimen/item_title"
