@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class CustomAdapter extends BaseAdapter{
     Context context;
     LayoutInflater layoutInflater = null;
-    ArrayList<Video> videoList;
+    ArrayList<VideoItem> videoList;
     LruCache<String, Bitmap> cache;
 
     private final int CACHE_SIZE = 1024 * 1024;
@@ -36,7 +36,7 @@ public class CustomAdapter extends BaseAdapter{
         cache = new LruCache<>(CACHE_SIZE);
     }
 
-    public void setVideoList(ArrayList<Video> list){
+    public void setVideoList(ArrayList<VideoItem> list){
         videoList = list;
     }
 
@@ -59,19 +59,21 @@ public class CustomAdapter extends BaseAdapter{
     public View getView(int position, View convertView, ViewGroup parent){
         convertView = layoutInflater.inflate(R.layout.list_item, parent, false);
 
-        Video v = videoList.get(position);
+        VideoItem v = videoList.get(position);
         ((TextView)convertView.findViewById(R.id.item_title)).setText(v.getTitle());
         ((TextView)convertView.findViewById(R.id.item_description)).setText(v.getDescription());
+        ((TextView)convertView.findViewById(R.id.item_duration)).setText(v.getMyTime().toString());
 
         //サムネイルの設定
         ImageView thumbnail = (ImageView)convertView.findViewById(R.id.item_thumbnail);
         thumbnail.setTag(v.getThumbnail());     // URLをタグとしておく
         new ImageGetTask(this, thumbnail).execute();
 
+
         return convertView;
     }
 
-    public void add(Video v){
+    public void add(VideoItem v){
         videoList.add(v);
     }
 

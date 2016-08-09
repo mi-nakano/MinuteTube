@@ -8,14 +8,16 @@ import javax.annotation.Nonnull;
 /**
  * Created by nakanomizuki on 2016/08/05.
  */
-public class Video {
+public class VideoItem {
     private String id, title, description, thumbnail;
+    private MyTime myTime;
 
-    public Video(String id, String title, String description, String thumbnail){
+    public VideoItem(String id, String title, String description, String thumbnail, String time){
         this.id = id;
         this.title = title;
         this.description = description;
         this.thumbnail = thumbnail;
+        myTime = MyTime.make(time);
     }
 
     public String getVidoId(){
@@ -34,10 +36,14 @@ public class Video {
         return thumbnail;
     }
 
+    public MyTime getMyTime(){
+        return myTime;
+    }
+
     @Nonnull
-    public static Video makeVideo(SearchResult res){
+    public static VideoItem makeVideoItem(SearchResult res, String duration){
         SearchResultSnippet snippet = res.getSnippet();
         String thumbnail = snippet.getThumbnails().getDefault().getUrl();
-        return new Video(res.getId().getVideoId(), snippet.getTitle(), snippet.getDescription(), thumbnail);
+        return new VideoItem(res.getId().getVideoId(), snippet.getTitle(), snippet.getDescription(), thumbnail, duration);
     }
 }

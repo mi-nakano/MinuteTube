@@ -24,11 +24,13 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
+import com.google.api.services.youtube.model.Video;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -109,10 +111,10 @@ public class MainActivity extends AppCompatActivity {
         return "any";
     }
 
-    class SearchTask extends AsyncTask<String, Void, List<SearchResult>> {
+    class SearchTask extends AsyncTask<String, Void, Map<SearchResult, String>> {
 
         @Override
-        protected List<SearchResult> doInBackground(String... words){
+        protected Map<SearchResult, String> doInBackground(String... words){
             String searchWord = words[0];
             String duration = words[1];
 
@@ -129,9 +131,29 @@ public class MainActivity extends AppCompatActivity {
                 search.setVideoDuration(duration);
                 search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
                 search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-                SearchListResponse searchResponse = search.execute();
-                List<SearchResult> searchResultList = searchResponse.getItems();
-                return searchResultList;
+                List<SearchResult> searchResultList = search.execute().getItems();
+
+                // idをカンマで区切った文字列を作る
+                StringBuilder idsBuilder = new StringBuilder();
+                for(SearchResult res : searchResultList){
+                    idsBuilder.append(res.getId().getVideoId());
+                    idsBuilder.append(",");
+                }
+                idsBuilder.deleteCharAt(idsBuilder.length() - 1);
+                System.out.println(idsBuilder.toString());
+
+                YouTube.Videos.List videos = youtube.videos().list("contentDetails");
+                videos.setKey(apiKey);
+                videos.setFields("items(contentDetails/duration)");
+                videos.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+                videos.setId(idsBuilder.toString());
+                List<Video> videoList = videos.execute().getItems();
+
+                Map<SearchResult, String> ret = new HashMap<>();
+                for(int i=0; i < searchResultList.size(); i++){
+                    ret.put(searchResultList.get(i), videoList.get(i).getContentDetails().getDuration());
+                }
+                return ret;
 
             } catch (IOException e){
                 return null;
@@ -139,11 +161,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(List<SearchResult> results){
+        protected void onPostExecute(Map<SearchResult, String> results){
             if (results != null) {
                 CustomAdapter adapter = new CustomAdapter(MainActivity.this);
-                for(SearchResult result : results){
-                    adapter.add(Video.makeVideo(result));
+                for(SearchResult result : results.keySet()){
+                    adapter.add(VideoItem.makeVideoItem(result, results.get(result)));
                 }
                 searchList.setAdapter(adapter);
                 // ListViewアイテムを選択した場合の動作
@@ -152,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
                         ListView list = (ListView) parent;
-                        Video video = (Video) list.getItemAtPosition(position);
+                        VideoItem video = (VideoItem) list.getItemAtPosition(position);
 
                         // 新しいアクティビティをスタート
                         Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
