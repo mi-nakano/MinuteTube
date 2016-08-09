@@ -24,24 +24,33 @@
             android:maxLength="50"
             android:hint="YouTubeで検索"/>
 
-        <Spinner
-            android:id="@+id/search_spinner"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/spinner_list"
-            android:layout_below="@id/search_text"
-            android:spinnerMode="dialog"/>
+            android:layout_below="@id/search_text">
+            <TextView
+                android:id="@+id/search_spinner_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="動画の長さ："/>
+            <Spinner
+                android:id="@+id/search_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/search_spinner_text"
+                android:entries="@array/spinner_list"
+                android:spinnerMode="dialog" />
 
-        <Button
-            android:id="@+id/search_btn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_below="@id/search_text"
-            android:layout_toRightOf="@id/search_spinner"
-            android:text="検索" />
-
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_search_category_default"
+                android:layout_marginLeft="@dimen/fab_margin"
+                android:layout_marginRight="@dimen/fab_margin"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
     </RelativeLayout>
-
 
     <ListView
         android:id="@+id/search_list"

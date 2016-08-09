@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -37,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
     ListView searchList;
     EditText searchText;
-    Button searchBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,23 +45,15 @@ public class MainActivity extends AppCompatActivity {
 
         searchList = (ListView) findViewById(R.id.search_list);
         searchText = (EditText) findViewById(R.id.search_text);
-        searchBtn = (Button) findViewById(R.id.search_btn);
-        searchBtn.setOnClickListener(new View.OnClickListener() {
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Spinner spinner = (Spinner)findViewById(R.id.search_spinner);
                 int index = spinner.getSelectedItemPosition();
                 SearchTask task = new SearchTask();
                 task.execute(searchText.getText().toString(), getDurationParam(index));
-            }
-        });
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
     }
