@@ -4,7 +4,7 @@
     android:layout_height="100dp">
 
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/item_left"
         android:layout_width="@dimen/item_left_width"
         android:layout_height="@dimen/item_height">
@@ -15,7 +15,25 @@
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             android:background="@drawable/gray"/>
-    </FrameLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/duration_margin"
+            android:background="@color/black">
+
+            <TextView
+                android:id="@+id/item_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/duration_padding_tb"
+                android:paddingBottom="@dimen/duration_padding_tb"
+                android:paddingLeft="@dimen/duration_padding_lr"
+                android:paddingRight="@dimen/duration_padding_lr"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/item_right"
@@ -30,10 +48,6 @@
         <TextView
             android:id="@+id/item_description"
             android:layout_below="@id/item_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/item_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
