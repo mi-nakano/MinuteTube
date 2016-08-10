@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:maxLength="50"
-            android:hint="YouTubeで検索"/>
+            android:hint="@string/search_hint"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                 android:id="@+id/search_spinner_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="動画の長さ："/>
+                android:text="@string/video_duration"/>
             <Spinner
                 android:id="@+id/search_spinner"
                 android:layout_width="wrap_content"
