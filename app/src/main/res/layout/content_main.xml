@@ -61,7 +61,8 @@
             android:id="@+id/search_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:dividerHeight="@dimen/list_divide"/>
+            android:dividerHeight="@dimen/list_divide"
+            android:clipToPadding="false"/>
         <TextView
             android:id="@+id/list_empty"
             android:layout_width="match_parent"
