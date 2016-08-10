@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,6 +28,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -45,11 +46,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
 
-    ListView searchList;
+    PullToRefreshListView refreshListView;
     CustomAdapter adapter;
     EditText searchText;
     String searchedQuery;
-    SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,15 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        searchList = (ListView) findViewById(R.id.search_list);
+        refreshListView = (PullToRefreshListView) findViewById(R.id.search_list);
+        refreshListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+        refreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                System.out.println("heeeee");
+            }
+        });
+        refreshListView.setEmptyView(findViewById(R.id.list_empty));
         searchText = (EditText) findViewById(R.id.search_text);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -89,16 +97,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 monitor.start();
-            }
-        });
-
-        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
-            @Override
-            public void onRefresh(){
-                Log.d("debug", "Refresh!");
-                refreshLayout.setEnabled(false);
-                new AdditionalSearchTask().execute();
             }
         });
 
@@ -202,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
                 for(SearchResult result : results.keySet()){
                     adapter.add(VideoItem.makeVideoItem(result, results.get(result)));
                 }
-                searchList.setAdapter(adapter);
-                searchList.setOnItemClickListener(new Listener());
+                refreshListView.setAdapter(adapter);
+                refreshListView.setOnItemClickListener(new Listener());
                 dismissDialog();
             }
         }
@@ -258,8 +256,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void endRefresh(){
-            refreshLayout.setRefreshing(false);
-            refreshLayout.setEnabled(true);
         }
     }
 }

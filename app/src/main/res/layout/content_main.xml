@@ -52,14 +52,19 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/refresh"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/search_group">
-        <ListView
+
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
             android:id="@+id/search_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Empty"/>
+    </RelativeLayout>
 </RelativeLayout>
