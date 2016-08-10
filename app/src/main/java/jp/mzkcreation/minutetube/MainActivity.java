@@ -62,14 +62,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         refreshListView = (PullToRefreshListView) findViewById(R.id.search_list);
-        refreshListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-        refreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-            @Override
-            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                Log.d("debug", "refresh");
-                new RefreshTask().execute();
-            }
-        });
+        refreshListView.setOnItemClickListener(new Listener());
         refreshListView.setEmptyView(findViewById(R.id.list_empty));
         searchText = (EditText) findViewById(R.id.search_text);
 
@@ -160,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         search.setVideoDuration(searchedDuration);
         search.setFields("nextPageToken");
         search.setFields("nextPageToken,items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-        if (!pageToken.equals("")){
+        if (pageToken != null && !pageToken.equals("")){
             search.setPageToken(pageToken);
         }
         search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
@@ -168,6 +161,10 @@ public class MainActivity extends AppCompatActivity {
         pageToken = response.getNextPageToken();
         Log.d("debug", "pageToken update: " + pageToken);
         List<SearchResult> searchResultList = response.getItems();
+
+        if(searchResultList == null || searchResultList.isEmpty()){
+            return null;
+        }
 
         // idをカンマで区切った文字列を作る
         StringBuilder idsBuilder = new StringBuilder();
@@ -219,12 +216,22 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Map<SearchResult, String> results){
+            adapter = new CustomAdapter(MainActivity.this);
             if (results != null) {
-                adapter = new CustomAdapter(MainActivity.this);
                 addVideosToAdapter(results);
-                refreshListView.setAdapter(adapter);
-                refreshListView.setOnItemClickListener(new Listener());
+                refreshListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+                refreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+                    @Override
+                    public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                        Log.d("debug", "refresh");
+                        new RefreshTask().execute();
+                    }
+                });
+            } else {
+                refreshListView.setMode(PullToRefreshBase.Mode.DISABLED);
+                Toast.makeText(MainActivity.this, "該当する動画が見つかりませんでした", Toast.LENGTH_LONG).show();
             }
+            refreshListView.setAdapter(adapter);
             dismissDialog();
         }
 
