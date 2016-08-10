@@ -60,7 +60,8 @@
         <com.handmark.pulltorefresh.library.PullToRefreshListView
             android:id="@+id/search_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:dividerHeight="@dimen/list_divide"/>
         <TextView
             android:id="@+id/list_empty"
             android:layout_width="match_parent"
