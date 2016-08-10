@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,8 +19,9 @@ public class PlayerActivity extends YouTubeBaseActivity
 
     YouTubePlayerView youtubeView;
     LinearLayout baseLayout;
+    LinearLayout otherGroup;
     String videoId;
-    boolean isFullScreen;
+    boolean isFullScreen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,8 @@ public class PlayerActivity extends YouTubeBaseActivity
         youtubeView.initialize(key, this);
 
         baseLayout = (LinearLayout) findViewById(R.id.player_base);
+        otherGroup = (LinearLayout) findViewById(R.id.other_group);
+        doLayout();
     }
 
     @Override
@@ -73,40 +77,32 @@ public class PlayerActivity extends YouTubeBaseActivity
     private void doLayout() {
         // プレイヤーのパラメータを取得
         LinearLayout.LayoutParams playerParams = (LinearLayout.LayoutParams) youtubeView.getLayoutParams();
-        // フルスクリーンの場合
+        LinearLayout.LayoutParams otherParams = (LinearLayout.LayoutParams) otherGroup.getLayoutParams();
+
         if (isFullScreen) {
             // YouTubePlayerの画面サイズを設定
             playerParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
             playerParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
-            // プレイヤー以外を非表示にする
-//            toolbar.setVisibility(View.GONE);
-//            otherViews.setVisibility(View.GONE);
-        }
-        // フルスクリーンではない場合
-        else {
-            // プレイヤー以外も表示する
-//            toolbar.setVisibility(View.VISIBLE);
-//            otherViews.setVisibility(View.VISIBLE);
+            otherGroup.setVisibility(View.GONE);
+        } else {
+            otherGroup.setVisibility(View.VISIBLE);
+
             // 画面を横向きにした場合のレイアウト
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                // PlayerとotherViewsのパラメータを設定
                 playerParams.width = 0;
-//                otherViewsParams.width = 0:
+                otherParams.width = 0;
                 playerParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-//                otherViewsParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                otherParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
                 playerParams.weight = 1;
-                // 外枠のレイアウト
                 baseLayout.setOrientation(LinearLayout.HORIZONTAL);
             }
             // 画面が縦の場合のレイアウト
             else {
-                // PlayerとotherViewsのパラメータを設定
                 playerParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
-//                otherViewsParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                otherParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
                 playerParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
                 playerParams.weight = 0;
-//                otherViewsParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
-                // 外枠のレイアウト
+                otherParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
                 baseLayout.setOrientation(LinearLayout.VERTICAL);
             }
         }
