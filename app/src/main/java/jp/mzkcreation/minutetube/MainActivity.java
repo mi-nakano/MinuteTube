@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,7 +46,10 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     ListView searchList;
+    CustomAdapter adapter;
     EditText searchText;
+    String searchedQuery;
+    SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 int index = spinner.getSelectedItemPosition();
                 final SearchTask task = new SearchTask();
                 task.execute(searchText.getText().toString(), getDurationParam(index));
+                searchedQuery = searchText.getText().toString();
 
                 // set timeout
                 Thread monitor = new Thread(){
@@ -84,6 +89,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 monitor.start();
+            }
+        });
+
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+            @Override
+            public void onRefresh(){
+                Log.d("debug", "Refresh!");
+                refreshLayout.setEnabled(false);
+                new AdditionalSearchTask().execute();
             }
         });
 
@@ -183,27 +198,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Map<SearchResult, String> results){
             if (results != null) {
-                CustomAdapter adapter = new CustomAdapter(MainActivity.this);
+                adapter = new CustomAdapter(MainActivity.this);
                 for(SearchResult result : results.keySet()){
                     adapter.add(VideoItem.makeVideoItem(result, results.get(result)));
                 }
                 searchList.setAdapter(adapter);
-                // ListViewアイテムを選択した場合の動作
-                searchList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
-                        ListView list = (ListView) parent;
-                        VideoItem video = (VideoItem) list.getItemAtPosition(position);
-
-                        // 新しいアクティビティをスタート
-                        Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
-                        intent.putExtra("id", video.getVidoId());
-                        intent.putExtra("title", video.getTitle());
-                        intent.putExtra("description", video.getDescription());
-                        startActivity(intent);
-                    }
-                });
+                searchList.setOnItemClickListener(new Listener());
                 dismissDialog();
             }
         }
@@ -219,5 +219,47 @@ public class MainActivity extends AppCompatActivity {
             progressDialog = null;
         }
     }
-}
 
+    class Listener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view,
+                                int position, long id) {
+            ListView list = (ListView) parent;
+            VideoItem video = (VideoItem) list.getItemAtPosition(position);
+
+            // 新しいアクティビティをスタート
+            Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
+            intent.putExtra("id", video.getVidoId());
+            intent.putExtra("title", video.getTitle());
+            intent.putExtra("description", video.getDescription());
+            startActivity(intent);
+        }
+    }
+
+    class AdditionalSearchTask extends AsyncTask<String, Void, Map<SearchResult, String>>{
+        @Override
+        protected Map<SearchResult, String> doInBackground(String... words){
+            try{
+                Thread.sleep(1000);
+            }catch (Exception e){
+
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Map<SearchResult, String> results){
+            endRefresh();
+        }
+
+        @Override
+        public void onCancelled(Map<SearchResult, String> results){
+            Toast.makeText(MainActivity.this, "接続に失敗しました.", Toast.LENGTH_LONG).show();
+        }
+
+        private void endRefresh(){
+            refreshLayout.setRefreshing(false);
+            refreshLayout.setEnabled(true);
+        }
+    }
+}
