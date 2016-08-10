@@ -26,6 +26,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
     private static YouTube youtube;
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
+    private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
     private static final long TIMEOUT = 10000;
 
     private ProgressDialog progressDialog;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     EditText searchText;
     String searchedQuery;
     String searchedDuration;
+    String pageToken = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,9 +158,16 @@ public class MainActivity extends AppCompatActivity {
         search.setKey(apiKey);
         search.setQ(searchedQuery);
         search.setVideoDuration(searchedDuration);
-        search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+        search.setFields("nextPageToken");
+        search.setFields("nextPageToken,items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+        if (!pageToken.equals("")){
+            search.setPageToken(pageToken);
+        }
         search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-        List<SearchResult> searchResultList = search.execute().getItems();
+        SearchListResponse response = search.execute();
+        pageToken = response.getNextPageToken();
+        Log.d("debug", "pageToken update: " + pageToken);
+        List<SearchResult> searchResultList = response.getItems();
 
         // idをカンマで区切った文字列を作る
         StringBuilder idsBuilder = new StringBuilder();
@@ -253,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
             try{
                 return requestVideos();
             }catch (Exception e){
-
+                Log.d("debug", "Request failed");
             }
             return null;
         }
