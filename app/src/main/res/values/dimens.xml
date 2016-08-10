@@ -10,6 +10,7 @@
     <dimen name="duration_margin">4dp</dimen>
     <dimen name="duration_padding_tb">2dp</dimen>
     <dimen name="duration_padding_lr">4dp</dimen>
+    <dimen name="item_margin">12dp</dimen>
     <dimen name="item_title">20sp</dimen>
     <dimen name="item_description">16sp</dimen>
 </resources>
