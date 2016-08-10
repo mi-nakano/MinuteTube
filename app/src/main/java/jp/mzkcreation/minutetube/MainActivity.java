@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -31,12 +33,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
     private static YouTube youtube;
     private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
+    private static final long TIMEOUT = 10000;
 
     private ProgressDialog progressDialog;
 
@@ -62,10 +66,24 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.setCancelable(false);
                 progressDialog.setMessage("Searching...");
                 progressDialog.show();
+
                 Spinner spinner = (Spinner)findViewById(R.id.search_spinner);
                 int index = spinner.getSelectedItemPosition();
-                SearchTask task = new SearchTask();
+                final SearchTask task = new SearchTask();
                 task.execute(searchText.getText().toString(), getDurationParam(index));
+
+                // set timeout
+                Thread monitor = new Thread(){
+                    public void run(){
+                        try{
+                            task.get(TIMEOUT, TimeUnit.MILLISECONDS);
+                        } catch (Exception e){
+                            Log.d("debug", "TimeOut!");
+                            task.cancel(true);
+                        }
+                    }
+                };
+                monitor.start();
             }
         });
 
@@ -156,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
                 return ret;
 
             } catch (IOException e){
+                Log.d("debug", "IOExecption at connecting Youtube");
+                cancel(true);
                 return null;
             }
         }
@@ -184,9 +204,19 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
-                progressDialog.dismiss();
-                progressDialog = null;
+                dismissDialog();
             }
+        }
+
+        @Override
+        public void onCancelled(Map<SearchResult, String> results){
+            dismissDialog();
+            Toast.makeText(MainActivity.this, "接続に失敗しました.", Toast.LENGTH_LONG).show();
+        }
+
+        private void dismissDialog(){
+            progressDialog.dismiss();
+            progressDialog = null;
         }
     }
 }
