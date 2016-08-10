@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setIndeterminate(true);
+                progressDialog.setIndeterminate(false);
+                progressDialog.setCancelable(false);
                 progressDialog.setMessage("Searching...");
                 progressDialog.show();
                 Spinner spinner = (Spinner)findViewById(R.id.search_spinner);
@@ -140,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                     idsBuilder.append(",");
                 }
                 idsBuilder.deleteCharAt(idsBuilder.length() - 1);
-                System.out.println(idsBuilder.toString());
 
                 YouTube.Videos.List videos = youtube.videos().list("contentDetails");
                 videos.setKey(apiKey);
@@ -184,7 +184,8 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
-                MainActivity.this.progressDialog.dismiss();
+                progressDialog.dismiss();
+                progressDialog = null;
             }
         }
     }
