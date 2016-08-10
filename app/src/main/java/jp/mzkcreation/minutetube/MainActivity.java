@@ -1,6 +1,7 @@
 package jp.mzkcreation.minutetube;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -65,11 +67,25 @@ public class MainActivity extends AppCompatActivity {
         refreshListView.setOnItemClickListener(new Listener());
         refreshListView.setEmptyView(findViewById(R.id.list_empty));
         searchText = (EditText) findViewById(R.id.search_text);
+        searchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                // EditTextのフォーカスが外れた場合
+                if (hasFocus == false) {
+                    // ソフトキーボードを非表示にする
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                v.requestFocus();
                 progressDialog = new ProgressDialog(MainActivity.this);
                 progressDialog.setIndeterminate(false);
                 progressDialog.setCancelable(false);
@@ -104,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         mAdView.loadAd(adRequest);
     }
+
+
 
 
     @Override
