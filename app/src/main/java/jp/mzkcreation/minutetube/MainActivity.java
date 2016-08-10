@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     CustomAdapter adapter;
     EditText searchText;
     String searchedQuery;
+    String searchedDuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
         refreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                System.out.println("heeeee");
+                Log.d("debug", "refresh");
+                new RefreshTask().execute();
             }
         });
         refreshListView.setEmptyView(findViewById(R.id.list_empty));
@@ -143,51 +145,64 @@ public class MainActivity extends AppCompatActivity {
         return "any";
     }
 
+    private Map<SearchResult, String> requestVideos() throws IOException{
+        youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
+            public void initialize(HttpRequest request) throws IOException {
+            }
+        }).setApplicationName("youtube-cmdline-search-sample").build();
+        YouTube.Search.List search = youtube.search().list("id,snippet");
+        search.setType("video");
+        String apiKey = Util.getYoutubeAPIKey();
+        search.setKey(apiKey);
+        search.setQ(searchedQuery);
+        search.setVideoDuration(searchedDuration);
+        search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+        search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+        List<SearchResult> searchResultList = search.execute().getItems();
+
+        // idをカンマで区切った文字列を作る
+        StringBuilder idsBuilder = new StringBuilder();
+        for(SearchResult res : searchResultList){
+            idsBuilder.append(res.getId().getVideoId());
+            idsBuilder.append(",");
+        }
+        idsBuilder.deleteCharAt(idsBuilder.length() - 1);
+
+        // videoの再生時間を取得する
+        YouTube.Videos.List videos = youtube.videos().list("contentDetails");
+        videos.setKey(apiKey);
+        videos.setFields("items(contentDetails/duration)");
+        videos.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+        videos.setId(idsBuilder.toString());
+        List<Video> videoList = videos.execute().getItems();
+
+        // Videoの情報と再生時間を結合して返す
+        Map<SearchResult, String> ret = new HashMap<>();
+        for(int i=0; i < searchResultList.size(); i++){
+            ret.put(searchResultList.get(i), videoList.get(i).getContentDetails().getDuration());
+        }
+        return ret;
+    }
+
+    private void addVideosToAdapter(Map<SearchResult, String> results){
+        for(SearchResult result : results.keySet()){
+            addVideoToAdapter(result, results.get(result));
+        }
+    }
+    private void addVideoToAdapter(SearchResult result, String duration){
+        adapter.add(VideoItem.makeVideoItem(result, duration));
+    }
+
     class SearchTask extends AsyncTask<String, Void, Map<SearchResult, String>> {
 
         @Override
         protected Map<SearchResult, String> doInBackground(String... words){
-            String searchWord = words[0];
-            String duration = words[1];
+            searchedQuery = words[0];
+            searchedDuration = words[1];
 
-            try {
-                youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
-                    public void initialize(HttpRequest request) throws IOException {
-                    }
-                }).setApplicationName("youtube-cmdline-search-sample").build();
-                YouTube.Search.List search = youtube.search().list("id,snippet");
-                search.setType("video");
-                String apiKey = Util.getYoutubeAPIKey();
-                search.setKey(apiKey);
-                search.setQ(searchWord);
-                search.setVideoDuration(duration);
-                search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-                search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-                List<SearchResult> searchResultList = search.execute().getItems();
-
-                // idをカンマで区切った文字列を作る
-                StringBuilder idsBuilder = new StringBuilder();
-                for(SearchResult res : searchResultList){
-                    idsBuilder.append(res.getId().getVideoId());
-                    idsBuilder.append(",");
-                }
-                idsBuilder.deleteCharAt(idsBuilder.length() - 1);
-
-                YouTube.Videos.List videos = youtube.videos().list("contentDetails");
-                videos.setKey(apiKey);
-                videos.setFields("items(contentDetails/duration)");
-                videos.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-                videos.setId(idsBuilder.toString());
-                List<Video> videoList = videos.execute().getItems();
-
-                Map<SearchResult, String> ret = new HashMap<>();
-                for(int i=0; i < searchResultList.size(); i++){
-                    ret.put(searchResultList.get(i), videoList.get(i).getContentDetails().getDuration());
-                }
-                return ret;
-
+            try{
+                return requestVideos();
             } catch (IOException e){
-                Log.d("debug", "IOExecption at connecting Youtube");
                 cancel(true);
                 return null;
             }
@@ -197,13 +212,11 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Map<SearchResult, String> results){
             if (results != null) {
                 adapter = new CustomAdapter(MainActivity.this);
-                for(SearchResult result : results.keySet()){
-                    adapter.add(VideoItem.makeVideoItem(result, results.get(result)));
-                }
+                addVideosToAdapter(results);
                 refreshListView.setAdapter(adapter);
                 refreshListView.setOnItemClickListener(new Listener());
-                dismissDialog();
             }
+            dismissDialog();
         }
 
         @Override
@@ -234,11 +247,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class AdditionalSearchTask extends AsyncTask<String, Void, Map<SearchResult, String>>{
+    class RefreshTask extends AsyncTask<String, Void, Map<SearchResult, String>>{
         @Override
         protected Map<SearchResult, String> doInBackground(String... words){
             try{
-                Thread.sleep(1000);
+                return requestVideos();
             }catch (Exception e){
 
             }
@@ -247,15 +260,20 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Map<SearchResult, String> results){
+            if(results != null){
+                addVideosToAdapter(results);
+            }
             endRefresh();
         }
 
         @Override
         public void onCancelled(Map<SearchResult, String> results){
             Toast.makeText(MainActivity.this, "接続に失敗しました.", Toast.LENGTH_LONG).show();
+            endRefresh();
         }
 
         private void endRefresh(){
+            refreshListView.onRefreshComplete();
         }
     }
 }
