@@ -1,5 +1,7 @@
 package jp.mzkcreation.minutetube;
 
+import android.util.Log;
+
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.SearchResultSnippet;
 
@@ -46,6 +48,22 @@ public class VideoItem {
 
     public BigInteger getViewCount(){
         return viewCount;
+    }
+
+    public String getViewCountString(){
+        Log.d("debug", "viewcount=" + viewCount.toString());
+        BigInteger killo = BigInteger.valueOf(1000);
+        int test = viewCount.compareTo(killo);
+        if (test < 0){
+            return viewCount.toString();
+        } else{
+            int test2 = viewCount.compareTo(killo.multiply(killo));
+            if(test2 < 0){
+                return viewCount.divide(killo).toString() + "K";
+            }else{
+                return viewCount.divide(killo.multiply(killo)).toString() + "M";
+            }
+        }
     }
 
     @Nonnull

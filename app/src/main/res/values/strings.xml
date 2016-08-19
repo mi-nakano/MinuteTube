@@ -3,6 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="search_hint">search for YouTube</string>
     <string name="video_duration">Video duration：</string>
+    <string name="views_prefix"></string>
+    <string name="views_suffix">views</string>
 
     <string-array name="spinner_list">
         <item>0〜4 min</item>

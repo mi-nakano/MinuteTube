@@ -3,6 +3,8 @@
     <string name="action_settings">Settings</string>
     <string name="search_hint">YouTubeで検索</string>
     <string name="video_duration">動画の長さ：</string>
+    <string name="views_prefix">視聴回数</string>
+    <string name="views_suffix">回</string>
 
     <string-array name="spinner_list">
         <item>0〜4 分</item>
