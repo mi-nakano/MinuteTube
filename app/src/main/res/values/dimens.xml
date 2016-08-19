@@ -16,4 +16,5 @@
 
     <dimen name="player_padding">12dp</dimen>
     <dimen name="player_title">20sp</dimen>
+    <dimen name="player_description_margin_top">12dp</dimen>
 </resources>
