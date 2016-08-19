@@ -5,8 +5,8 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="list_divide">16dp</dimen>
-    <dimen name="item_height">116dp</dimen>
-    <dimen name="item_left_width">150dp</dimen>
+    <dimen name="item_height">92dp</dimen>
+    <dimen name="item_left_width">140dp</dimen>
     <dimen name="duration_margin">4dp</dimen>
     <dimen name="duration_padding_tb">2dp</dimen>
     <dimen name="duration_padding_lr">4dp</dimen>
