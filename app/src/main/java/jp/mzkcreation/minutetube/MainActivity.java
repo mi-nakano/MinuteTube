@@ -35,6 +35,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -275,6 +276,8 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("id", video.getVidoId());
             intent.putExtra("title", video.getTitle());
             intent.putExtra("description", video.getDescription());
+            DecimalFormat df = new DecimalFormat("#,###");
+            intent.putExtra("viewCount", df.format(video.getViewCount().longValue()));
             startActivity(intent);
         }
     }
