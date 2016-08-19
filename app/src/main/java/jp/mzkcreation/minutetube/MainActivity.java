@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         search.setQ(searchedQuery);
         search.setVideoDuration(searchedDuration);
         search.setFields("nextPageToken");
-        search.setFields("nextPageToken,items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+        search.setFields("nextPageToken,items(id/kind,id/videoId,snippet/title,snippet/description,snippet/thumbnails/default/url)");
         if (pageToken != null && !pageToken.equals("")){
             search.setPageToken(pageToken);
         }

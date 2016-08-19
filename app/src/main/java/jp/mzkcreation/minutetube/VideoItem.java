@@ -17,7 +17,7 @@ public class VideoItem {
     private MyTime myTime;
     private BigInteger viewCount;
 
-    public VideoItem(String id, String title, String description, String thumbnail, String time, BigInteger viewCount){
+    private VideoItem(String id, String title, String description, String thumbnail, String time, BigInteger viewCount){
         this.id = id;
         this.title = title;
         this.description = description;
