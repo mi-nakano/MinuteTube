@@ -62,6 +62,7 @@ public class CustomAdapter extends BaseAdapter{
         VideoItem v = videoList.get(position);
         ((TextView)convertView.findViewById(R.id.item_title)).setText(v.getTitle());
         ((TextView)convertView.findViewById(R.id.item_viewCount)).setText(v.getViewCountString());
+        ((TextView)convertView.findViewById(R.id.item_channel)).setText(v.getChannelTitle());
         ((TextView)convertView.findViewById(R.id.item_duration)).setText(v.getMyTime().toString());
 
         //サムネイルの設定

@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         search.setQ(searchedQuery);
         search.setVideoDuration(searchedDuration);
         search.setFields("nextPageToken");
-        search.setFields("nextPageToken,items(id/kind,id/videoId,snippet/title,snippet/description,snippet/thumbnails/default/url)");
+        search.setFields("nextPageToken,items(id/kind,id/videoId,snippet/title,snippet/description, snippet/channelTitle, snippet/thumbnails/default/url)");
         if (pageToken != null && !pageToken.equals("")){
             search.setPageToken(pageToken);
         }
@@ -275,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
             intent.putExtra("id", video.getVidoId());
             intent.putExtra("title", video.getTitle());
+            intent.putExtra("channel", video.getChannelTitle());
             intent.putExtra("description", video.getDescription());
             DecimalFormat df = new DecimalFormat("#,###");
             intent.putExtra("viewCount", df.format(video.getViewCount().longValue()));

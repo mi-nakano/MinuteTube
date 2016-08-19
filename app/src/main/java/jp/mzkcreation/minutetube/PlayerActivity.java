@@ -33,9 +33,11 @@ public class PlayerActivity extends YouTubeBaseActivity
         String title = intent.getStringExtra("title");
         String description = intent.getStringExtra("description");
         String viewCount = intent.getStringExtra("viewCount");
+        String channelTitle = intent.getStringExtra("channel");
         ((TextView) findViewById(R.id.player_title)).setText(title);
         ((TextView) findViewById(R.id.player_viewCount)).setText(viewCount);
         ((TextView) findViewById(R.id.player_description)).setText(description);
+        ((TextView) findViewById(R.id.player_channel)).setText(channelTitle);
 
         String key = Util.getYoutubeProperty().getProperty("youtube.apikey");
         youtubeView = (YouTubePlayerView) findViewById (R.id.youtube_view);

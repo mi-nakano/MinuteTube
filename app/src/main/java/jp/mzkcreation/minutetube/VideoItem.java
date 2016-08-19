@@ -13,14 +13,15 @@ import javax.annotation.Nonnull;
  * Created by nakanomizuki on 2016/08/05.
  */
 public class VideoItem {
-    private String id, title, description, thumbnail;
+    private String id, title, description, channelTitle, thumbnail;
     private MyTime myTime;
     private BigInteger viewCount;
 
-    private VideoItem(String id, String title, String description, String thumbnail, String time, BigInteger viewCount){
+    private VideoItem(String id, String title, String description, String channelTitle, String thumbnail, String time, BigInteger viewCount){
         this.id = id;
         this.title = title;
         this.description = description;
+        this.channelTitle = channelTitle;
         this.thumbnail = thumbnail;
         myTime = MyTime.make(time);
         this.viewCount = viewCount;
@@ -36,6 +37,10 @@ public class VideoItem {
 
     public String getDescription(){
         return description;
+    }
+
+    public String getChannelTitle(){
+        return channelTitle;
     }
 
     public String getThumbnail(){
@@ -70,6 +75,6 @@ public class VideoItem {
     public static VideoItem makeVideoItem(SearchResult res, String duration, BigInteger viewCount){
         SearchResultSnippet snippet = res.getSnippet();
         String thumbnail = snippet.getThumbnails().getDefault().getUrl();
-        return new VideoItem(res.getId().getVideoId(), snippet.getTitle(), snippet.getDescription(), thumbnail, duration, viewCount);
+        return new VideoItem(res.getId().getVideoId(), snippet.getTitle(), snippet.getDescription(), snippet.getChannelTitle(), thumbnail, duration, viewCount);
     }
 }
