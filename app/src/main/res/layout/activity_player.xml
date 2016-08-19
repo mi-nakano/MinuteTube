@@ -25,7 +25,8 @@
             android:id="@+id/player_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/player_title"/>
+            android:textSize="@dimen/player_title"
+            android:textColor="@color/black"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
