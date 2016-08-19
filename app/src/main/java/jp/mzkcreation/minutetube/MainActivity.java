@@ -35,9 +35,8 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         return "any";
     }
 
-    private Map<SearchResult, String> requestVideos() throws IOException{
+    private List<VideoItem> requestVideos() throws IOException{
         youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
             public void initialize(HttpRequest request) throws IOException {
             }
@@ -193,34 +192,33 @@ public class MainActivity extends AppCompatActivity {
         idsBuilder.deleteCharAt(idsBuilder.length() - 1);
 
         // videoの再生時間を取得する
-        YouTube.Videos.List videos = youtube.videos().list("contentDetails");
+        YouTube.Videos.List videos = youtube.videos().list("contentDetails,statistics");
         videos.setKey(apiKey);
-        videos.setFields("items(contentDetails/duration)");
+        videos.setFields("items(contentDetails/duration,statistics/viewCount)");
         videos.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
         videos.setId(idsBuilder.toString());
         List<Video> videoList = videos.execute().getItems();
 
-        // Videoの情報と再生時間を結合して返す
-        Map<SearchResult, String> ret = new HashMap<>();
+        // Videoの情報を返す
+        List<VideoItem> viList = new ArrayList<>();
         for(int i=0; i < searchResultList.size(); i++){
-            ret.put(searchResultList.get(i), videoList.get(i).getContentDetails().getDuration());
+            Video v = videoList.get(i);
+            VideoItem vi = VideoItem.makeVideoItem(searchResultList.get(i), v.getContentDetails().getDuration(), v.getStatistics().getViewCount());
+            viList.add(vi);
         }
-        return ret;
+        return viList;
     }
 
-    private void addVideosToAdapter(Map<SearchResult, String> results){
-        for(SearchResult result : results.keySet()){
-            addVideoToAdapter(result, results.get(result));
+    private void addVideosToAdapter(List<VideoItem> vis){
+        for(VideoItem vi : vis){
+            adapter.add(vi);
         }
     }
-    private void addVideoToAdapter(SearchResult result, String duration){
-        adapter.add(VideoItem.makeVideoItem(result, duration));
-    }
 
-    class SearchTask extends AsyncTask<String, Void, Map<SearchResult, String>> {
+    class SearchTask extends AsyncTask<String, Void, List<VideoItem>> {
 
         @Override
-        protected Map<SearchResult, String> doInBackground(String... words){
+        protected List<VideoItem> doInBackground(String... words){
             searchedQuery = words[0];
             searchedDuration = words[1];
 
@@ -233,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Map<SearchResult, String> results){
+        protected void onPostExecute(List<VideoItem> results){
             adapter = new CustomAdapter(MainActivity.this);
             if (results != null) {
                 addVideosToAdapter(results);
@@ -254,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onCancelled(Map<SearchResult, String> results){
+        public void onCancelled(List<VideoItem> results){
             dismissDialog();
             Toast.makeText(MainActivity.this, "接続に失敗しました.", Toast.LENGTH_LONG).show();
         }
@@ -281,9 +279,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class RefreshTask extends AsyncTask<String, Void, Map<SearchResult, String>>{
+    class RefreshTask extends AsyncTask<String, Void, List<VideoItem>>{
         @Override
-        protected Map<SearchResult, String> doInBackground(String... words){
+        protected List<VideoItem> doInBackground(String... words){
             try{
                 return requestVideos();
             }catch (Exception e){
@@ -293,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Map<SearchResult, String> results){
+        protected void onPostExecute(List<VideoItem> results){
             if(results != null){
                 addVideosToAdapter(results);
             }
@@ -301,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onCancelled(Map<SearchResult, String> results){
+        public void onCancelled(List<VideoItem> results){
             Toast.makeText(MainActivity.this, "接続に失敗しました.", Toast.LENGTH_LONG).show();
             endRefresh();
         }
