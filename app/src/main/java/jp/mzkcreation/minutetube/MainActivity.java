@@ -63,6 +63,19 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.action_search) {
+                    Toast.makeText(MainActivity.this,"search click!!",Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                return true;
+            }
+        });
+
         refreshListView = (PullToRefreshListView) findViewById(R.id.search_list);
         refreshListView.setOnItemClickListener(new Listener());
         refreshListView.setEmptyView(findViewById(R.id.list_empty));
@@ -139,9 +152,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
