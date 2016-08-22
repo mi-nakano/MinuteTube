@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         refreshListView = (PullToRefreshListView) findViewById(R.id.search_list);
+        refreshListView.setMode(PullToRefreshBase.Mode.DISABLED);
         refreshListView.setOnItemClickListener(new Listener());
         refreshListView.setEmptyView(findViewById(R.id.list_empty));
         refreshListView.setScrollEmptyView(false);
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 // EditTextのフォーカスが外れた場合
                 if (hasFocus == false) {
                     // ソフトキーボードを非表示にする
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             }
