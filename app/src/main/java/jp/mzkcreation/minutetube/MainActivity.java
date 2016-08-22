@@ -248,14 +248,19 @@ public class MainActivity extends AppCompatActivity {
             adapter = new CustomAdapter(MainActivity.this);
             if (results != null) {
                 addVideosToAdapter(results);
-                refreshListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-                refreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-                    @Override
-                    public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                        Log.d("debug", "refresh");
-                        new RefreshTask().execute();
-                    }
-                });
+                if(pageToken != null) {
+                    refreshListView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+                    refreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+                        @Override
+                        public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                            Log.d("debug", "refresh");
+                            new RefreshTask().execute();
+                        }
+                    });
+                } else{ // 他の動画がない
+                    Log.d("debug", "End of result list");
+                    refreshListView.setMode(PullToRefreshBase.Mode.DISABLED);
+                }
             } else {
                 refreshListView.setMode(PullToRefreshBase.Mode.DISABLED);
                 Toast.makeText(MainActivity.this, "該当する動画が見つかりませんでした", Toast.LENGTH_LONG).show();
