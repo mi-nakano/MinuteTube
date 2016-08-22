@@ -9,14 +9,14 @@
     <dimen name="spinner_text_size">16sp</dimen>
 
     <dimen name="list_divide">16dp</dimen>
-    <dimen name="item_height">92dp</dimen>
+    <dimen name="item_height">80dp</dimen>
     <dimen name="item_left_width">140dp</dimen>
     <dimen name="duration_margin">4dp</dimen>
     <dimen name="duration_padding_tb">2dp</dimen>
     <dimen name="duration_padding_lr">4dp</dimen>
     <dimen name="item_margin">12dp</dimen>
-    <dimen name="item_title">20sp</dimen>
-    <dimen name="item_description">16sp</dimen>
+    <dimen name="item_title">18sp</dimen>
+    <dimen name="item_description">14sp</dimen>
 
     <dimen name="player_padding">12dp</dimen>
     <dimen name="player_title">20sp</dimen>

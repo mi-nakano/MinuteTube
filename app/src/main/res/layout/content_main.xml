@@ -10,8 +10,6 @@
     tools:context="jp.mzkcreation.minutetube.MainActivity"
     tools:showIn="@layout/activity_main">
 
-
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -31,6 +29,7 @@
             android:src="@drawable/icon"
             android:scaleType="fitCenter"/>
     </RelativeLayout>
+
     <TextView
         android:id="@+id/dummy"
         android:layout_width="wrap_content"
