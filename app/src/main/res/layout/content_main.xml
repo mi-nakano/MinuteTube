@@ -28,6 +28,10 @@
             android:layout_marginTop="@dimen/empty_margin_top"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxHeight="@dimen/empty_max_height"
+            android:maxWidth="@dimen/empty_max_width"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:src="@drawable/icon"/>
     </RelativeLayout>
 
