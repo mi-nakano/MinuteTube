@@ -1,20 +1,17 @@
 package jp.mzkcreation.minutetube;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -51,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     PullToRefreshListView refreshListView;
     CustomAdapter adapter;
-    EditText searchText;
     String searchedQuery;
     String searchedDuration;
     String pageToken = "";
@@ -64,67 +60,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         toolbar.inflateMenu(R.menu.menu_main);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.action_search) {
-                    Toast.makeText(MainActivity.this,"search click!!",Toast.LENGTH_LONG).show();
-                    return true;
-                }
-                return true;
-            }
-        });
 
         refreshListView = (PullToRefreshListView) findViewById(R.id.search_list);
         refreshListView.setOnItemClickListener(new Listener());
         refreshListView.setEmptyView(findViewById(R.id.list_empty));
-        searchText = (EditText) findViewById(R.id.search_text);
-        searchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // EditTextのフォーカスが外れた場合
-                if (hasFocus == false) {
-                    // ソフトキーボードを非表示にする
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
-            }
-        });
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                v.requestFocus();
-                progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setIndeterminate(false);
-                progressDialog.setCancelable(false);
-                progressDialog.setMessage("Searching...");
-                progressDialog.show();
-
-                Spinner spinner = (Spinner)findViewById(R.id.search_spinner);
-                int index = spinner.getSelectedItemPosition();
-                final SearchTask task = new SearchTask();
-                task.execute(searchText.getText().toString(), getDurationParam(index));
-                searchedQuery = searchText.getText().toString();
-
-                // set timeout
-                Thread monitor = new Thread(){
-                    public void run(){
-                        try{
-                            task.get(TIMEOUT, TimeUnit.MILLISECONDS);
-                        } catch (Exception e){
-                            Log.d("debug", "TimeOut!");
-                            task.cancel(true);
-                        }
-                    }
-                };
-                monitor.start();
-            }
-        });
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
@@ -141,6 +80,44 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem searchItem = menu.findItem(R.id.search_view);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setIndeterminate(false);
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage("Searching...");
+                progressDialog.show();
+
+                Spinner spinner = (Spinner)findViewById(R.id.search_spinner);
+                int index = spinner.getSelectedItemPosition();
+                final SearchTask task = new SearchTask();
+                searchedQuery = query;
+                task.execute(searchedQuery, getDurationParam(index));
+
+                // set timeout
+                Thread monitor = new Thread(){
+                    public void run(){
+                        try{
+                            task.get(TIMEOUT, TimeUnit.MILLISECONDS);
+                        } catch (Exception e){
+                            Log.d("debug", "TimeOut!");
+                            task.cancel(true);
+                        }
+                    }
+                };
+                monitor.start();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         return true;
     }
 

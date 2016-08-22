@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="jp.mzkcreation.minutetube.MainActivity">
     <item
-        android:id="@+id/action_search"
+        android:id="@+id/search_view"
         android:icon="@drawable/search"
-        android:title="test"
-        app:showAsAction="always" />
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        android:title="@string/search_hint"/>
 </menu>
