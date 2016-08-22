@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog = new ProgressDialog(MainActivity.this);
                 progressDialog.setIndeterminate(false);
                 progressDialog.setCancelable(false);
-                progressDialog.setMessage("Searching...");
+                progressDialog.setMessage(getString(R.string.searching));
                 progressDialog.show();
 
                 final SearchTask task = new SearchTask();
