@@ -20,7 +20,6 @@
     <dimen name="item_title">18sp</dimen>
     <dimen name="item_description">14sp</dimen>
 
-    <dimen name="empty_margin_top">20dp</dimen>
     <dimen name="empty_max_height">280dp</dimen>
     <dimen name="empty_max_width">280dp</dimen>
 
