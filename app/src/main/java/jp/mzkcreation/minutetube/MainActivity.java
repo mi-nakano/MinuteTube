@@ -4,13 +4,16 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     PullToRefreshListView refreshListView;
     CustomAdapter adapter;
+    Spinner spinner;
     String searchedQuery;
     String searchedDuration;
     String pageToken = "";
@@ -59,7 +63,17 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.inflateMenu(R.menu.menu_main);
+        View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.spinner, toolbar, false);
+        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        toolbar.addView(spinnerContainer, lp);
+
+        SpinnerAdapter spinnerAdapter = new SpinnerAdapter(this);
+        spinnerAdapter.addItem("選択1");
+        spinnerAdapter.addItem("選択2");
+        spinnerAdapter.addItem("選択3");
+
+        spinner = (Spinner) spinnerContainer.findViewById(R.id.spinner_container);
+        spinner.setAdapter(spinnerAdapter);
 
         refreshListView = (PullToRefreshListView) findViewById(R.id.search_list);
         refreshListView.setOnItemClickListener(new Listener());

@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@android:id/text1"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:drawablePadding="4dp"
+        android:drawableRight="@drawable/abc_spinner_mtrl_am_alpha" />
+
+</LinearLayout>
