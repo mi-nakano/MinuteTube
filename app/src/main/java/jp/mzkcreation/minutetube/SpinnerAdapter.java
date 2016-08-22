@@ -1,6 +1,7 @@
 package jp.mzkcreation.minutetube;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -51,7 +52,7 @@ public class SpinnerAdapter extends BaseAdapter {
 
         TextView textView = (TextView)view.findViewById(android.R.id.text1);
         textView.setText(getTitle(position));
-
+        textView.setTextColor(Color.parseColor("BLACK"));
         return view;
     }
 

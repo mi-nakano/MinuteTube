@@ -4,8 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="spinner_height">60dp</dimen>
-    <dimen name="spinner_padding">16dp</dimen>
+    <dimen name="spinner_height">48dp</dimen>
+    <dimen name="spinner_padding">8dp</dimen>
     <dimen name="spinner_text_size">16sp</dimen>
 
     <dimen name="list_divide">16dp</dimen>
