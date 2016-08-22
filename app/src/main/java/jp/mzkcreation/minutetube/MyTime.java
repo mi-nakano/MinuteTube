@@ -58,10 +58,10 @@ public class MyTime implements Comparable<MyTime>{
     public String toString(){
         StringBuilder builder = new StringBuilder();
         if(hour > 0){
-            builder.append(String.format("%02d", hour));
+            builder.append(String.format("%2d", hour));
             builder.append(':');
         }
-        builder.append(String.format("%02d", minute));
+        builder.append(String.format("%2d", minute));
         builder.append(':');
         builder.append(String.format("%02d", second));
         return builder.toString();
