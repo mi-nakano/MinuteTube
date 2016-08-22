@@ -66,12 +66,10 @@ public class MainActivity extends AppCompatActivity {
         View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.spinner, toolbar, false);
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         toolbar.addView(spinnerContainer, lp);
-
         SpinnerAdapter spinnerAdapter = new SpinnerAdapter(this);
-        spinnerAdapter.addItem("選択1");
-        spinnerAdapter.addItem("選択2");
-        spinnerAdapter.addItem("選択3");
-
+        for(String item :getResources().getStringArray(R.array.spinner_list)){
+            spinnerAdapter.addItem(item);
+        }
         spinner = (Spinner) spinnerContainer.findViewById(R.id.spinner_container);
         spinner.setAdapter(spinnerAdapter);
 
@@ -105,11 +103,9 @@ public class MainActivity extends AppCompatActivity {
                 progressDialog.setMessage("Searching...");
                 progressDialog.show();
 
-                Spinner spinner = (Spinner)findViewById(R.id.search_spinner);
-                int index = spinner.getSelectedItemPosition();
                 final SearchTask task = new SearchTask();
                 searchedQuery = query;
-                task.execute(searchedQuery, getDurationParam(index));
+                task.execute(searchedQuery, getDurationParam(spinner.getSelectedItemPosition()));
 
                 // set timeout
                 Thread monitor = new Thread(){
