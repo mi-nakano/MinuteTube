@@ -4,16 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -63,16 +61,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.spinner, toolbar, false);
-        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        toolbar.addView(spinnerContainer, lp);
-        SpinnerAdapter spinnerAdapter = new SpinnerAdapter(this);
-        for(String item :getResources().getStringArray(R.array.spinner_list)){
-            spinnerAdapter.addItem(item);
-        }
-        spinner = (Spinner) spinnerContainer.findViewById(R.id.spinner_container);
-        spinner.setAdapter(spinnerAdapter);
-
         refreshListView = (PullToRefreshListView) findViewById(R.id.search_list);
         refreshListView.setOnItemClickListener(new Listener());
         refreshListView.setEmptyView(findViewById(R.id.list_empty));
@@ -108,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
                 task.execute(searchedQuery, getDurationParam(spinner.getSelectedItemPosition()));
 
                 // set timeout
-                Thread monitor = new Thread(){
-                    public void run(){
-                        try{
+                Thread monitor = new Thread() {
+                    public void run() {
+                        try {
                             task.get(TIMEOUT, TimeUnit.MILLISECONDS);
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             Log.d("debug", "TimeOut!");
                             task.cancel(true);
                         }
@@ -127,6 +115,14 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+
+        spinner = (Spinner) MenuItemCompat.getActionView(menu.findItem(R.id.spinner));
+        SpinnerAdapter spinnerAdapter = new SpinnerAdapter(this);
+        for(String elem :getResources().getStringArray(R.array.spinner_list)){
+            spinnerAdapter.addItem(elem);
+        }
+        spinner.setAdapter(spinnerAdapter);
 
         return true;
     }
