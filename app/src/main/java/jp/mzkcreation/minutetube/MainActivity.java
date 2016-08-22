@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         refreshListView = (PullToRefreshListView) findViewById(R.id.search_list);
         refreshListView.setOnItemClickListener(new Listener());
         refreshListView.setEmptyView(findViewById(R.id.list_empty));
+        refreshListView.setScrollEmptyView(false);
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
