@@ -24,7 +24,6 @@ public class MyTime implements Comparable<MyTime>{
         if(index != -1){
             hour = Integer.valueOf(tmp.substring(0, index));
             tmp = tmp.substring(index+1, length);
-            length = tmp.length();
         }
         index = tmp.indexOf('M');
         length = tmp.length();
@@ -57,6 +56,14 @@ public class MyTime implements Comparable<MyTime>{
 
     @Override
     public String toString(){
-        return String.format("%02d", hour) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", second);
+        StringBuilder builder = new StringBuilder();
+        if(hour > 0){
+            builder.append(String.format("%02d", hour));
+            builder.append(':');
+        }
+        builder.append(String.format("%02d", minute));
+        builder.append(':');
+        builder.append(String.format("%02d", second));
+        return builder.toString();
     }
 }
