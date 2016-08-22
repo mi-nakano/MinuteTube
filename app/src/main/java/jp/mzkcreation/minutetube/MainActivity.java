@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
     private static YouTube youtube;
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 5;
+    private static final long NUMBER_OF_VIDEOS_RETURNED = 20;
     private static final long TIMEOUT = 10000;
 
     private ProgressDialog progressDialog;
