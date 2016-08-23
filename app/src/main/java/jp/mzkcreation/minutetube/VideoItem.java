@@ -6,6 +6,7 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.SearchResultSnippet;
 
 import java.math.BigInteger;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
@@ -16,6 +17,11 @@ public class VideoItem {
     private String id, title, description, channelTitle, thumbnail;
     private MyTime myTime;
     private BigInteger viewCount;
+    private static final BigInteger
+            killo = BigInteger.valueOf(1000),
+            mega = killo.multiply(killo),
+            jpMan = BigInteger.valueOf(10000);
+
 
     private VideoItem(String id, String title, String description, String channelTitle, String thumbnail, String time, BigInteger viewCount){
         this.id = id;
@@ -56,17 +62,30 @@ public class VideoItem {
     }
 
     public String getViewCountString(){
-        Log.d("debug", "viewcount=" + viewCount.toString());
-        BigInteger killo = BigInteger.valueOf(1000);
+        Log.d("debug", "viewCount=" + viewCount);
+        if(Locale.getDefault().equals(Locale.JAPAN)){
+            return getViewCountStrigJp();
+        }
+        return getViewCountStringEn();
+    }
+    private String getViewCountStrigJp(){
+        int test = viewCount.compareTo(jpMan);
+        if (test < 0){
+            return viewCount.toString();
+        } else{
+            return viewCount.divide(jpMan).toString() + "万";
+        }
+    }
+    private String getViewCountStringEn(){
         int test = viewCount.compareTo(killo);
         if (test < 0){
             return viewCount.toString();
         } else{
-            int test2 = viewCount.compareTo(killo.multiply(killo));
+            int test2 = viewCount.compareTo(mega);
             if(test2 < 0){
                 return viewCount.divide(killo).toString() + "K";
             }else{
-                return viewCount.divide(killo.multiply(killo)).toString() + "M";
+                return viewCount.divide(mega).toString() + "M";
             }
         }
     }
