@@ -10,5 +10,6 @@
         android:paddingLeft="@dimen/spinner_padding"
         android:paddingRight="@dimen/spinner_padding"
         android:gravity="center_vertical|start"
+        android:background="@color/white"
         android:textSize="@dimen/spinner_text_size" />
 </LinearLayout>
